@@ -1,11 +1,21 @@
 <template>
   <v-container>
     <v-row class="text-center">
-      <v-col>
-        <span>Start from here</span>
-      </v-col>
-      <v-col>
-        <span>Some adjustment</span>
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>
+            <span>Start from here</span>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer>
+              <v-btn variant="flat" color="black"><span>Start here</span>
+                <template v-slot:append>
+                  <v-icon color="success" size="20">mdi-check</v-icon>
+                </template>
+              </v-btn>
+            </v-spacer>
+          </v-card-actions>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -16,55 +26,6 @@ import logo from '../assets/logo.svg'
 
 export default {
   name: 'HelloWorld',
-
-  data: () => ({
-    ecosystem: [
-      {
-        text: 'vuetify-loader',
-        href: 'https://github.com/vuetifyjs/vuetify-loader/tree/next',
-      },
-      {
-        text: 'github',
-        href: 'https://github.com/vuetifyjs/vuetify/tree/next',
-      },
-      {
-        text: 'awesome-vuetify',
-        href: 'https://github.com/vuetifyjs/awesome-vuetify',
-      },
-    ],
-    importantLinks: [
-      {
-        text: 'Chat',
-        href: 'https://community.vuetifyjs.com',
-      },
-      {
-        text: 'Made with Vuetify',
-        href: 'https://madewithvuejs.com/vuetify',
-      },
-      {
-        text: 'Twitter',
-        href: 'https://twitter.com/vuetifyjs',
-      },
-      {
-        text: 'Articles',
-        href: 'https://medium.com/vuetify',
-      },
-    ],
-    logo,
-    whatsNext: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Roadmap',
-        href: 'https://vuetifyjs.com/introduction/roadmap/',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-      },
-    ],
-  }),
 }
+
 </script>
