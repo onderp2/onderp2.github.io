@@ -4,6 +4,9 @@
       <v-col>
         <span>Start from here</span>
       </v-col>
+      <v-col>
+        <span>Some adjustment</span>
+      </v-col>
     </v-row>
   </v-container>
 </template>
