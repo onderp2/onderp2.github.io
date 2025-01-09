@@ -3,8 +3,7 @@
     "serve": "vite preview",
     "build": "vite build",
     "dev": "vite",
-    "deploy": "vue-cli-service build && gh-pages -d dist"
-
+    "deploy": "vite build && gh-pages -d dist"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
