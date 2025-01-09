@@ -79,6 +79,10 @@
             </v-btn>
           </v-card-text>
         </v-card>
+
+        <div v-if="this.fakeData" class="text-center">
+          Mock data provided
+        </div>
       </v-container>
     </v-main>
   </v-app>
@@ -94,21 +98,30 @@ export default {
       userData: {},
       platformInfo: {},
       message: '',
-      tg: null,
-      isValidated: false
+      tg: { },
+      isValidated: false,
+      fakeData: false,
     }
   },
 
   created() {
-    // Initialize Telegram WebApp
-    this.tg = window.Telegram.WebApp
+    console.log(import.meta.env.VITE_NODE_ENV);
 
-    // Validate the data
+    this.tg = window.Telegram.WebApp;
+
     try {
-      // Get and parse initData
-      const initData = this.tg.initData
-      if (!initData) {
-        throw new Error('No init data available')
+      let initData;
+
+      if (import.meta.env.VITE_NODE_ENV === 'dev' && !window.Telegram.WebApp.initData) {
+        initData = 'user=%7B%22id%22%3A12345,%22first_name%22%3A%22Test%22%7D';
+
+        this.fakeData = true;
+      } else {
+        initData = this.tg.initData;
+
+        if (!initData) {
+          throw new Error('No init data available')
+        }
       }
 
       // Here you would typically send initData to your backend
@@ -128,25 +141,15 @@ export default {
     }
 
     // Enable closing confirmation
-    this?.tg.enableClosingConfirmation()
+    // this.tg?.enableClosingConfirmation()
 
-    // Ready event
-    this?.tg.ready()
+    this.tg?.ready()
 
-    // Get platform info
     this.platformInfo = {
       platform: this.tg.platform,
       colorScheme: this.tg.colorScheme,
       version: this.tg.version
     }
-
-
-    const mainButton = this.tg.mainButton;
-
-    mainButton?.setText("Send message");
-    mainButton?.onClick(() => {
-      this.tg.showAlert(`Message sent: ${this.message}`)
-    })
   },
 
   methods: {
@@ -156,12 +159,19 @@ export default {
 
     sendData() {
       if (this.message) {
-        this.tg.MainButton.show()
+        const mainButton = window.Telegram.WebApp.MainButton;
+
+        console.log('mainButton', mainButton);
+
+        mainButton.setText("SEND MESSAGE");
+        mainButton.show();
+        mainButton.onClick(() => {
+          this.tg.showAlert(`Message sent: ${this.message}`)
+        });
       } else {
         this.tg.showAlert('Please enter a message first')
       }
     }
-
   }
 }
 
