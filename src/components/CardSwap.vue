@@ -17,7 +17,7 @@
                 <v-card-title>
                   Settings
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="px-5 py-0">
                   <v-list>
                     <v-list-item class="mr-0 pa-0">
                       <template v-slot:prepend>
@@ -220,6 +220,9 @@ export default {
 
     applySettings() {
       this.cardsCount = this.settingsCountCards;
+      this.openSettings = false;
+
+      this.initializeGame();
     },
 
     checkWin() {
