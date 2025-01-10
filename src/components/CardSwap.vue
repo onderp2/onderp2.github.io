@@ -17,13 +17,19 @@
             outlined
             class="memory-card"
             :class="{
-                  'memory-card--matched': card.match,
                   'flipped': card.flipped
                 }"
         >
-          <v-card-text class="text-center text-h5">
-            <span>{{ card.flipped ? card.value : "?"}}</span>
-          </v-card-text>
+          <div class="memory-card-inner">
+            <!-- Front Face -->
+            <div class="memory-card-front">
+              ?
+            </div>
+            <!-- Back Face -->
+            <div class="memory-card-back" :class="{'memory-card-back--matched': card.match}">
+              {{ card.value }}
+            </div>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -37,12 +43,15 @@
           Time: {{formattedTime}}
         </v-chip>
       </v-col>
+
     </v-row>
-    <v-row justify="center">
+
+      <v-row justify="center">
       <v-btn color="primary" @click="resetGame">
         <span>Reset game</span>
       </v-btn>
     </v-row>
+
     <div v-if="this.fakeData" class="text-center">
       Mock data provided
     </div>
@@ -233,22 +242,6 @@ export default {
       const winSound = new Audio('/audio/win.mp3');
       winSound?.play();
     }
-
-    // sendData() {
-    //   if (this.message) {
-    //     const mainButton = window.Telegram.WebApp.MainButton;
-    //
-    //     console.log('mainButton', mainButton);
-    //
-    //     mainButton.setText("SEND MESSAGE");
-    //     mainButton.show();
-    //     mainButton.onClick(() => {
-    //       this.tg.showAlert(`Message sent: ${this.message}`)
-    //     });
-    //   } else {
-    //     this.tg.showAlert('Please enter a message first')
-    //   }
-    // },
   }
 }
 </script>
@@ -263,20 +256,39 @@ export default {
   perspective: 1000px;
 }
 
-.memory-card > .v-card {
+.memory-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.6s;
 }
 
-.memory-card.flipped > .v-card {
+.memory-card.flipped .memory-card-inner {
   transform: rotateY(180deg);
 }
 
-.memory-card:hover {
-  background-color: #73abf5;
+.memory-card-front,
+.memory-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #f5f5f5;
 }
 
-.memory-card--matched {
+.memory-card-back {
+  transform: rotateY(180deg);
+  background-color: #59b7ef;
+}
+
+.memory-card-back--matched {
   background-color: #44cd5b;
 }
+
 </style>
