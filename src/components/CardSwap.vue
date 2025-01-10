@@ -1,11 +1,52 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row no-gutters>
       <v-col cols="12">
-        <h1 class="text-center">
-          Memory game
+        <v-card elevation="0">
+          <template v-slot:title>
+            <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
+              Memory game
+            </div>
+          </template>
+          <template v-slot:append>
+            <v-icon icon="mdi-cog" @click="this.openSettings = true">
+            </v-icon>
+
+            <v-dialog v-model="this.openSettings">
+              <v-card>
+                <v-card-title>
+                  Settings
+                </v-card-title>
+                <v-card-text>
+                  <v-list>
+                    <v-list-item class="mr-0 pa-0">
+                      <template v-slot:prepend>
+                        Cards number:
+                      </template>
+                      <template v-slot:append>
+                        <v-select
+                            :max-width="140"
+                            v-model="this.settingsCountCards"
+                            :items="[6, 8, 10, 12, 14, 16]"
+                        >
+                        </v-select>
+                      </template>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn @click="this.applySettings" variant="flat" color="primary">
+                    <span>Apply</span>
+                  </v-btn>
+                  <v-btn @click="this.openSettings = false" variant="flat" color="secondary">
+                    <span>Close</span>
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </template>
           <v-divider/>
-        </h1>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -37,7 +78,8 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" >
+    <v-row justify="center" class="mt-4">
+      <v-divider></v-divider>
       <v-col cols="auto" class="d-flex flex-colum ga-5">
         <v-chip color="primary">
           Score: {{ matchedPairs}}
@@ -101,6 +143,8 @@ export default {
       timeElapsed: 0,
       showResults: false,
       isActiveSession: false,
+      openSettings: false,
+      settingsCountCards: 6,
     }
   },
   created() {
@@ -122,7 +166,7 @@ export default {
     },
 
     generateCards() {
-      const value = Array.from({length: 6}, (_, i) => i + 1);
+      const value = Array.from({length: this.cardsCount}, (_, i) => i + 1);
       const deck = [...value, ...value].sort(() => Math.random() - 0.5);
 
       return deck.map((value) => ({
@@ -172,6 +216,10 @@ export default {
           this.lockBoard = false;
         }, 1000);
       }
+    },
+
+    applySettings() {
+      this.cardsCount = this.settingsCountCards;
     },
 
     checkWin() {
