@@ -1,9 +1,13 @@
 <template>
   <v-container>
-    <h1 class="text-center mb-4">
-      Memory game
-      <v-divider/>
-    </h1>
+    <v-row>
+      <v-col cols="12">
+        <h1 class="text-center">
+          Memory game
+          <v-divider/>
+        </h1>
+      </v-col>
+    </v-row>
 
     <v-row justify="center">
       <v-col v-for="(card, index) in this.cards"
@@ -19,13 +23,12 @@
             :class="{
                   'flipped': card.flipped
                 }"
+            :disabled="!isActiveSession"
         >
           <div class="memory-card-inner">
-            <!-- Front Face -->
             <div class="memory-card-front">
               ?
             </div>
-            <!-- Back Face -->
             <div class="memory-card-back" :class="{'memory-card-back--matched': card.match}">
               {{ card.value }}
             </div>
@@ -34,8 +37,8 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
-      <v-col cols="auto">
+    <v-row justify="center" >
+      <v-col cols="auto" class="d-flex flex-colum ga-5">
         <v-chip color="primary">
           Score: {{ matchedPairs}}
         </v-chip>
@@ -47,14 +50,39 @@
     </v-row>
 
       <v-row justify="center">
-      <v-btn color="primary" @click="resetGame">
-        <span>Reset game</span>
-      </v-btn>
+        <div class="d-flex ga-5">
+          <v-btn color="primary" @click="resetGame">
+            <span>Reset game</span>
+          </v-btn>
+          <v-btn color="secondary" @click="startGame" :disabled="isActiveSession">
+            <span>Start game</span>
+          </v-btn>
+        </div>
     </v-row>
 
-    <div v-if="this.fakeData" class="text-center">
-      Mock data provided
-    </div>
+    <v-dialog v-model="showResults" transition="dialog-top-transition">
+      <v-card>
+        <v-card-title class="text-center">Game results:</v-card-title>
+        <v-card-text>
+          <div class="d-flex flex-column">
+            <div>
+              You finished in: {{this.formattedTime}}
+            </div>
+            <div>
+              Your score: {{this.matchedPairs}}
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="startGame" variant="flat">
+            Play again
+          </v-btn>
+          <v-btn color="secondary" @click="showResults=false" variant="flat">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -64,12 +92,6 @@ export default {
 
   data() {
     return {
-      userData: {},
-      platformInfo: {},
-      message: '',
-      tg: {},
-      isValidated: false,
-      fakeData: false,
       cardsCount: 6,
       cards: this.generateCards(),
       flippedCards: [],
@@ -77,47 +99,10 @@ export default {
       matchedPairs: 0,
       timer: null,
       timeElapsed: 0,
+      showResults: false,
+      isActiveSession: false,
     }
   },
-  // created() {
-  //   console.log(import.meta.env.VITE_NODE_ENV);
-  //
-  //   this.tg = window.Telegram.WebApp;
-  //
-  //   try {
-  //     let initData;
-  //
-  //     if (import.meta.env.VITE_NODE_ENV === 'dev' && !window.Telegram.WebApp.initData) {
-  //       initData = 'user=%7B%22id%22%3A12345,%22first_name%22%3A%22Test%22,%22username%22%3A%22testuser%22%7D';
-  //
-  //       this.fakeData = true;
-  //     } else {
-  //       initData = this.tg.initData;
-  //
-  //       if (!initData) {
-  //         throw new Error('No init data available')
-  //       }
-  //     }
-  //
-  //     this.isValidated = true
-  //
-  //     const searchParams = new URLSearchParams(initData)
-  //     const user = searchParams.get('user')
-  //     if (user) {
-  //       this.userData = JSON.parse(user)
-  //     }
-  //   } catch (error) {
-  //     console.error('Data validation failed:', error)
-  //     this.isValidated = false
-  //   }
-  //
-  //   this.platformInfo = {
-  //     platform: this.tg.platform,
-  //     colorScheme: this.tg.colorScheme,
-  //     version: this.tg.version
-  //   }
-  // },
-
   created() {
     this.initializeGame();
   },
@@ -193,6 +178,10 @@ export default {
       if (this.matchedPairs === this.cardsCount) {
         this.playWinSound();
         this.stopTimer();
+
+        setTimeout(() => {
+          this.showResults = true
+        }, 500);
         this.tg.showAlert("Congratulations! You won!");
       }
     },
@@ -203,17 +192,21 @@ export default {
       this.lockBoard = false;
       this.matchedPairs = 0;
       this.resetTimer();
+    },
+
+    startGame() {
+      this.initializeGame();
       this.startTimer();
+      this.isActiveSession = true;
     },
 
     resetGame() {
       this.lockBoard = true;
+      this.showResults = false;
+      this.isActiveSession = false;
+      this.matchedPairs = 0;
       this.resetTimer();
       this.cards.forEach(card => (card.flipped = false));
-
-      setTimeout(() => {
-        this.initializeGame();
-      }, 600); // Matches the transition time in CSS (0.6s)
     },
 
     startTimer() {
