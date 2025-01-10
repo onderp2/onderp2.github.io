@@ -9,8 +9,14 @@
             </div>
           </template>
           <template v-slot:append>
+            <div class="d-flex ga-3">
             <v-icon icon="mdi-cog" @click="this.openSettings = true">
             </v-icon>
+
+            <v-icon @click="toggleSound" >
+              {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
+            </v-icon>
+            </div>
 
             <v-dialog v-model="this.openSettings">
               <v-card>
@@ -111,7 +117,7 @@
               You finished in: {{this.formattedTime}}
             </div>
             <div>
-              Your score: {{this.matchedPairs}}
+              Your score: {{this.score}}
             </div>
           </div>
         </v-card-text>
@@ -146,6 +152,7 @@ export default {
       openSettings: false,
       settingsCountCards: 6,
       score: 0,
+      isSoundEnabled: true,
     }
   },
   created() {
@@ -296,17 +303,22 @@ export default {
 
     playFlipSound() {
       const flipSound = new Audio('/audio/flipcard.mp3')
-      flipSound?.play();
+      if (this.isSoundEnabled) flipSound?.play();
     },
 
     playMatchSound() {
       const matchSound = new Audio('/audio/match.mp3');
-      matchSound?.play();
+      if (this.isSoundEnabled) matchSound?.play();
     },
 
     playWinSound() {
       const winSound = new Audio('/audio/win.mp3');
-      winSound?.play();
+
+      if (this.isSoundEnabled) winSound?.play();
+    },
+
+    toggleSound() {
+      this.isSoundEnabled = !this.isSoundEnabled;
     }
   }
 }
