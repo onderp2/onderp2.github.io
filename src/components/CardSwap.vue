@@ -13,7 +13,7 @@
             <v-icon icon="mdi-cog" @click="this.openSettings = true">
             </v-icon>
 
-            <v-icon @click="toggleSound" >
+            <v-icon @click="toggleSound" :color="isSoundEnabled ? 'black' : 'grey'">
               {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
             </v-icon>
             </div>
