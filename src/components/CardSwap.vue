@@ -185,7 +185,14 @@ export default {
     },
 
     flipCard(index) {
-      if (this.lockBoard || this.cards[index].flipped || this.flippedCards.length === 2) return;
+      if (this.lockBoard || this.flippedCards.length === 2) return;
+
+      if (this.flippedCards.includes(index) && this.flippedCards.length === 1) {
+        this.cards[index].flipped = false;
+        this.flippedCards = [];
+
+        return;
+      }
 
       this.flippedCards.push(index);
       this.cards[index].flipped = true;
@@ -202,7 +209,6 @@ export default {
 
       const firstCard = this.cards[firstIndex];
       const secondCard = this.cards[secondIndex];
-
 
       if (firstCard.value === secondCard.value) {
         firstCard.match = true;
