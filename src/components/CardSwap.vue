@@ -207,7 +207,13 @@ export default {
     },
 
     resetGame() {
-      this.initializeGame();
+      this.lockBoard = true;
+      this.resetTimer();
+      this.cards.forEach(card => (card.flipped = false));
+
+      setTimeout(() => {
+        this.initializeGame();
+      }, 600); // Matches the transition time in CSS (0.6s)
     },
 
     startTimer() {
@@ -290,5 +296,4 @@ export default {
 .memory-card-back--matched {
   background-color: #44cd5b;
 }
-
 </style>
