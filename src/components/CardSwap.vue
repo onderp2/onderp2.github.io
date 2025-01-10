@@ -82,7 +82,7 @@
       <v-divider></v-divider>
       <v-col cols="auto" class="d-flex flex-colum ga-5">
         <v-chip color="primary">
-          Score: {{ matchedPairs}}
+          Score: {{ score }}
         </v-chip>
         <v-chip color="secondary">
           Time: {{formattedTime}}
@@ -145,6 +145,7 @@ export default {
       isActiveSession: false,
       openSettings: false,
       settingsCountCards: 6,
+      score: 0,
     }
   },
   created() {
@@ -204,6 +205,9 @@ export default {
         secondCard.flipped = true;
         this.flippedCards = [];
         ++this.matchedPairs;
+
+        this.score += this.calculateScore();
+
         this.playMatchSound();
         this.checkWin();
       } else {
@@ -242,6 +246,7 @@ export default {
       this.flippedCards = [];
       this.lockBoard = false;
       this.matchedPairs = 0;
+      this.score = 0;
       this.resetTimer();
     },
 
@@ -251,11 +256,22 @@ export default {
       this.isActiveSession = true;
     },
 
+    calculateScore() {
+      const baseScore = 100;
+      const timePenalty = Math.floor(this.timeElapsed / 5);
+      const minimumScore = 10;
+
+      const currentScore = baseScore - timePenalty;
+
+      return Math.max(currentScore, minimumScore);
+    },
+
     resetGame() {
       this.lockBoard = true;
       this.showResults = false;
       this.isActiveSession = false;
       this.matchedPairs = 0;
+      this.score = 0;
       this.resetTimer();
       this.cards.forEach(card => (card.flipped = false));
     },
