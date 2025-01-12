@@ -33,7 +33,7 @@
                         <v-select
                             :max-width="140"
                             v-model="this.settingsCountCards"
-                            :items="[6, 8, 10, 12, 14, 16]"
+                            :items="[4, 6, 8, 10, 12, 14, 16]"
                         >
                         </v-select>
                       </template>
@@ -84,7 +84,7 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" class="mt-4">
+    <v-row justify="center" class="mt-4 position-relative">
       <v-divider></v-divider>
       <v-col cols="auto" class="d-flex flex-colum ga-5">
         <v-chip color="primary">
@@ -94,11 +94,16 @@
           Time: {{formattedTime}}
         </v-chip>
       </v-col>
-
+      <v-col cols="12" v-if="isShowMultiplier" class="multiplier-notification text-center">
+        <v-chip color="success" outlined class="multiplier-chip" size="30">
+          x{{ this.consecutiveMatches }} Multiplier!
+        </v-chip>
+      </v-col>
     </v-row>
 
-      <v-row justify="center">
-        <div class="d-flex ga-5">
+    <v-row justify="center" class="position-relative">
+      <v-col cols="12" class="d-flex justify-center">
+        <div class="d-flex ga-5 flex-shrink-1 flex-grow-0 flex-wrap justify-center">
           <v-btn color="primary" @click="resetGame">
             <span>Reset game</span>
           </v-btn>
@@ -106,6 +111,7 @@
             <span>Start game</span>
           </v-btn>
         </div>
+      </v-col>
     </v-row>
 
     <v-dialog v-model="showResults" transition="dialog-top-transition">
@@ -153,6 +159,8 @@ export default {
       settingsCountCards: 6,
       score: 0,
       isSoundEnabled: true,
+      consecutiveMatches: 0,
+      isShowMultiplier: false
     }
   },
   created() {
@@ -216,15 +224,23 @@ export default {
 
         firstCard.flipped = true;
         secondCard.flipped = true;
+
         this.flippedCards = [];
-        ++this.matchedPairs;
+
+        this.consecutiveMatches++;
+        this.matchedPairs++
 
         this.score += this.calculateScore();
+
+        if (this.consecutiveMatches > 1) {
+          this.showMultiplier();
+        }
 
         this.playMatchSound();
         this.checkWin();
       } else {
         this.lockBoard = true;
+        this.consecutiveMatches = 0;
 
         setTimeout(() => {
           firstCard.flipped = false;
@@ -260,10 +276,12 @@ export default {
       this.lockBoard = false;
       this.matchedPairs = 0;
       this.score = 0;
+      this.consecutiveMatches = 0;
       this.resetTimer();
     },
 
     startGame() {
+      this.showResults = false;
       this.initializeGame();
       this.startTimer();
       this.isActiveSession = true;
@@ -274,7 +292,9 @@ export default {
       const timePenalty = Math.floor(this.timeElapsed / 5);
       const minimumScore = 10;
 
-      const currentScore = baseScore - timePenalty;
+      const multiplier = this.consecutiveMatches > 1 ? this.consecutiveMatches : 1;
+
+      const currentScore = (baseScore - timePenalty) * multiplier;
 
       return Math.max(currentScore, minimumScore);
     },
@@ -285,6 +305,7 @@ export default {
       this.isActiveSession = false;
       this.matchedPairs = 0;
       this.score = 0;
+      this.consecutiveMatches = 0;
       this.resetTimer();
       this.cards.forEach(card => (card.flipped = false));
     },
@@ -325,6 +346,14 @@ export default {
 
     toggleSound() {
       this.isSoundEnabled = !this.isSoundEnabled;
+    },
+
+    showMultiplier() {
+      this.isShowMultiplier = true;
+
+      setTimeout(() => {
+        this.isShowMultiplier = false;
+      }, 2000);
     }
   }
 }
@@ -373,5 +402,28 @@ export default {
 
 .memory-card-back--matched {
   background-color: #44cd5b;
+}
+
+.multiplier-notification {
+  position: absolute;
+  top: -20px;
+  z-index: 1000;
+  animation: fadeOut 2s ease-out forwards;
+}
+
+.multiplier-chip {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }
 </style>
