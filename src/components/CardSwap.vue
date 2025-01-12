@@ -72,7 +72,16 @@
 
     <v-dialog v-model="showResults" persistent transition="dialog-top-transition">
       <v-card>
-        <v-card-title class="text-center">Game results:</v-card-title>
+        <v-card-title class="text-center">
+          <div class="d-flex flex-column ga-2">
+            <div class="font-weight-bold">
+              Game results:
+            </div>
+            <div class="align-self-center text-subtitle-1">
+              {{ this.generateCongratulationMessage()}}
+            </div>
+          </div>
+        </v-card-title>
         <v-card-text>
           <div class="d-flex flex-column">
             <div>
@@ -149,7 +158,14 @@ export default {
       score: 0,
       isSoundEnabled: true,
       consecutiveMatches: 0,
-      isShowMultiplier: false
+      isShowMultiplier: false,
+      congratulationMessages: [
+        "You are awesome! 🎉👏",
+        "Fantastic job! 🚀🔥",
+        "You're a genius! 🧠💡",
+        "Unstoppable! 💪🎯",
+        "Legendary performance! 🏆✨"
+      ],
     }
   },
   created() {
@@ -351,6 +367,12 @@ export default {
       setTimeout(() => {
         this.isShowMultiplier = false;
       }, 2000);
+    },
+
+    generateCongratulationMessage() {
+      const randomIndex = Math.floor(Math.random() * this.congratulationMessages.length);
+
+      return this.congratulationMessages[randomIndex];
     }
   }
 }
