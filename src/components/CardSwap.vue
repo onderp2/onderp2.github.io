@@ -32,12 +32,12 @@
           :elevation="0"
           :class="{ flipped: card.flipped }"
           :disabled="!isActiveSession"
+          :style="{backgroundColor:  telegramTheme.textColor, textColor: telegramTheme.bgColor}"
       >
-        <div class="memory-card-inner" :style="{ backgroundColor: telegramTheme.buttonColor, color: telegramTheme.textColor }">
-          <div class="memory-card-front" :style="{color: telegramTheme.textColor }">?</div>
+        <div class="memory-card-inner">
+          <div class="memory-card-front">?</div>
           <div class="memory-card-back"
                :class="{ 'memory-card-back--matched': card.match }"
-               :style="{  color: telegramTheme.textColor }"
                >
             {{ card.value }}
           </div>
@@ -428,8 +428,7 @@ export default {
   aspect-ratio: 1 / 1; /* Ensures cards are always square */
   width: 95%;
   height: 95%;
-  border: 2px solid var(--text-color, #ccc);
-  background-color: var(--bg-color, #f5f5f5);;
+  border: 2px solid var(--button-color, #ccc);
   cursor: pointer;
   display: flex;
   align-items: center;
