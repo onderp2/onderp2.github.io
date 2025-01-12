@@ -32,7 +32,7 @@
           :elevation="0"
           :class="{ flipped: card.flipped }"
           :disabled="!isActiveSession"
-          :style="{backgroundColor:  telegramTheme.textColor, textColor: telegramTheme.bgColor}"
+          :style="{textColor: telegramTheme.bgColor}"
       >
         <div class="memory-card-inner">
           <div class="memory-card-front">?</div>
