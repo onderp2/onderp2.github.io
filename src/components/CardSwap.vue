@@ -2,7 +2,7 @@
   <v-container class="game-container" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
     <v-row no-gutters>
       <v-col cols="12">
-        <v-card elevation="0">
+        <v-card elevation="0" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
@@ -33,11 +33,11 @@
           :class="{ flipped: card.flipped }"
           :disabled="!isActiveSession"
       >
-        <div class="memory-card-inner">
-          <div class="memory-card-front" :style="{ color: telegramTheme.textColor }">?</div>
+        <div class="memory-card-inner" :style="{ backgroundColor: telegramTheme.buttonColor, color: telegramTheme.textColor }">
+          <div class="memory-card-front">?</div>
           <div class="memory-card-back"
                :class="{ 'memory-card-back--matched': card.match }"
-               :style="{ backgroundColor: telegramTheme.buttonColor, color: telegramTheme.textColor }">
+               >
             {{ card.value }}
           </div>
         </div>
