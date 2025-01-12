@@ -2,7 +2,7 @@
   <v-container class="game-container" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
     <v-row no-gutters>
       <v-col cols="12">
-        <v-card elevation="0" :style="{color: telegramTheme.textColor, backgroundColor: telegramTheme.bgColor}">
+        <v-card elevation="0">
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
@@ -37,7 +37,7 @@
           <div class="memory-card-front" :style="{ color: telegramTheme.textColor }">?</div>
           <div class="memory-card-back"
                :class="{ 'memory-card-back--matched': card.match }"
-               :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }">
+               :style="{ backgroundColor: telegramTheme.buttonColor, color: telegramTheme.textColor }">
             {{ card.value }}
           </div>
         </div>
@@ -111,7 +111,7 @@
           Settings
         </v-card-title>
         <v-card-text class="px-5 py-0">
-          <v-list>
+          <v-list :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
             <v-list-item class="mr-0 pa-0">
               <template v-slot:prepend>
                 Cards number:
