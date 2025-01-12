@@ -70,7 +70,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="showResults" transition="dialog-top-transition">
+    <v-dialog v-model="showResults" persistent transition="dialog-top-transition">
       <v-card>
         <v-card-title class="text-center">Game results:</v-card-title>
         <v-card-text>
