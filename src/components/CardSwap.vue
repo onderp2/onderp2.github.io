@@ -10,53 +10,20 @@
           </template>
           <template v-slot:append>
             <div class="d-flex ga-3">
-            <v-icon icon="mdi-cog" @click="this.openSettings = true">
-            </v-icon>
+              <v-icon icon="mdi-cog" @click="this.openSettings = true">
+              </v-icon>
 
-            <v-icon @click="toggleSound" :color="isSoundEnabled ? 'black' : 'grey'">
-              {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
-            </v-icon>
+              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'black' : 'grey'">
+                {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
+              </v-icon>
             </div>
-
-            <v-dialog v-model="this.openSettings">
-              <v-card>
-                <v-card-title>
-                  Settings
-                </v-card-title>
-                <v-card-text class="px-5 py-0">
-                  <v-list>
-                    <v-list-item class="mr-0 pa-0">
-                      <template v-slot:prepend>
-                        Cards number:
-                      </template>
-                      <template v-slot:append>
-                        <v-select
-                            :max-width="140"
-                            v-model="this.settingsCountCards"
-                            :items="[4, 6, 8, 10, 12, 14, 16]"
-                        >
-                        </v-select>
-                      </template>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn @click="this.applySettings" variant="flat" color="primary">
-                    <span>Apply</span>
-                  </v-btn>
-                  <v-btn @click="this.openSettings = false" variant="flat" color="secondary">
-                    <span>Close</span>
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
           </template>
           <v-divider/>
         </v-card>
       </v-col>
     </v-row>
 
-    <div class="cards-grid">
+    <v-row justify="center" class="cards-grid">
       <v-card
           v-for="(card, index) in cards"
           :key="index"
@@ -74,11 +41,11 @@
           </div>
         </div>
       </v-card>
-    </div>
+    </v-row>
 
     <v-row justify="center" class="mt-4 position-relative">
       <v-divider></v-divider>
-      <v-col cols="auto" class="d-flex flex-colum ga-5">
+      <v-col cols="12" class="d-flex flex-colum ga-5 justify-center">
         <v-chip color="primary">
           Score: {{ score }}
         </v-chip>
@@ -91,9 +58,7 @@
           x{{ this.consecutiveMatches }} Multiplier!
         </v-chip>
       </v-col>
-    </v-row>
 
-    <v-row justify="center" class="position-relative">
       <v-col cols="12" class="d-flex justify-center">
         <div class="d-flex ga-5 flex-shrink-1 flex-grow-0 flex-wrap justify-center">
           <v-btn color="primary" @click="resetGame">
@@ -125,6 +90,39 @@
           </v-btn>
           <v-btn color="secondary" @click="showResults=false" variant="flat">
             Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="this.openSettings">
+      <v-card>
+        <v-card-title>
+          Settings
+        </v-card-title>
+        <v-card-text class="px-5 py-0">
+          <v-list>
+            <v-list-item class="mr-0 pa-0">
+              <template v-slot:prepend>
+                Cards number:
+              </template>
+              <template v-slot:append>
+                <v-select
+                    :max-width="140"
+                    v-model="this.settingsCountCards"
+                    :items="[4, 6, 8, 10, 12, 14, 16]"
+                >
+                </v-select>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="this.applySettings" variant="flat" color="primary">
+            <span>Apply</span>
+          </v-btn>
+          <v-btn @click="this.openSettings = false" variant="flat" color="secondary">
+            <span>Close</span>
           </v-btn>
         </v-card-actions>
       </v-card>
