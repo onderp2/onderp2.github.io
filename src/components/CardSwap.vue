@@ -34,9 +34,10 @@
           :disabled="!isActiveSession"
       >
         <div class="memory-card-inner" :style="{ backgroundColor: telegramTheme.buttonColor, color: telegramTheme.textColor }">
-          <div class="memory-card-front">?</div>
+          <div class="memory-card-front" :style="{color: telegramTheme.textColor }">?</div>
           <div class="memory-card-back"
                :class="{ 'memory-card-back--matched': card.match }"
+               :style="{  color: telegramTheme.textColor }"
                >
             {{ card.value }}
           </div>
@@ -468,7 +469,7 @@ export default {
 }
 
 .memory-card-back--matched {
-  background-color: var(--matched-color, #44cd5b);
+  background-color: #44cd5b;
 }
 
 .multiplier-notification {
