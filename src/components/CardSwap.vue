@@ -2,7 +2,7 @@
   <v-container class="game-container" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
     <v-row no-gutters>
       <v-col cols="12">
-        <v-card elevation="0" :style="{color: telegramTheme.textColor}">
+        <v-card elevation="0" :style="{color: telegramTheme.textColor, backgroundColor: telegramTheme.bgColor}">
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
