@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="game-container">
     <v-row no-gutters>
       <v-col cols="12">
         <v-card elevation="0">
@@ -23,14 +23,13 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" class="cards-grid">
+    <v-row justify="center" class="cards-grid" :style="{gridTemplateColumns: gridFormat}">
       <v-card
           v-for="(card, index) in cards"
           :key="index"
           @click="flipCard(index)"
-          :elevation="card.flipped ? 12 : 2"
-          outlined
           class="memory-card"
+          :elevation="0"
           :class="{ flipped: card.flipped }"
           :disabled="!isActiveSession"
       >
@@ -132,7 +131,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'CardSwap',
 
   data() {
     return {
@@ -163,6 +162,14 @@ export default {
       const seconds = this.timeElapsed % 60;
 
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+    },
+
+    gridFormat() {
+     if (this.cardsCount === 4) {
+        return "repeat(2, 1fr)";
+      }
+
+      return "repeat(4, 1fr)";
     }
   },
 
@@ -350,22 +357,26 @@ export default {
 </script>
 <style scoped>
 
+.game-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   justify-content: center;
   align-items: center;
-  width: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 10px;
 }
 
 .memory-card {
   aspect-ratio: 1 / 1; /* Ensures cards are always square */
-  max-width: 100px;
-  max-height: 100px;
+  width: 95%;
+  height: 95%;
+  border: 2px solid #ccc;
   cursor: pointer;
   display: flex;
   align-items: center;
