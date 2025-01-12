@@ -1,8 +1,8 @@
 <template>
-  <v-container class="game-container">
+  <v-container class="game-container" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
     <v-row no-gutters>
       <v-col cols="12">
-        <v-card elevation="0">
+        <v-card elevation="0" :style="{color: telegramTheme.textColor}">
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
@@ -13,7 +13,7 @@
               <v-icon icon="mdi-cog" @click="this.openSettings = true">
               </v-icon>
 
-              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'black' : 'grey'">
+              <v-icon @click="toggleSound" :color="isSoundEnabled ? telegramTheme.textColor : '#aaa'">
                 {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
               </v-icon>
             </div>
@@ -34,8 +34,10 @@
           :disabled="!isActiveSession"
       >
         <div class="memory-card-inner">
-          <div class="memory-card-front">?</div>
-          <div class="memory-card-back" :class="{ 'memory-card-back--matched': card.match }">
+          <div class="memory-card-front" :style="{ color: telegramTheme.textColor }">?</div>
+          <div class="memory-card-back"
+               :class="{ 'memory-card-back--matched': card.match }"
+               :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }">
             {{ card.value }}
           </div>
         </div>
@@ -60,10 +62,10 @@
 
       <v-col cols="12" class="d-flex justify-center">
         <div class="d-flex ga-5 flex-shrink-1 flex-grow-0 flex-wrap justify-center">
-          <v-btn color="primary" @click="resetGame">
+          <v-btn color="secondary" @click="resetGame">
             <span>Reset game</span>
           </v-btn>
-          <v-btn color="secondary" @click="startGame" :disabled="isActiveSession">
+          <v-btn :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }" @click="startGame" :disabled="isActiveSession">
             <span>Start game</span>
           </v-btn>
         </div>
@@ -71,7 +73,7 @@
     </v-row>
 
     <v-dialog v-model="showResults" persistent transition="dialog-top-transition">
-      <v-card>
+      <v-card :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
         <v-card-title class="text-center">
           <div class="d-flex flex-column ga-2">
             <div class="font-weight-bold">
@@ -93,7 +95,7 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="startGame" variant="flat">
+          <v-btn :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }" @click="startGame" variant="flat">
             Play again
           </v-btn>
           <v-btn color="secondary" @click="showResults=false" variant="flat">
@@ -104,7 +106,7 @@
     </v-dialog>
 
     <v-dialog v-model="this.openSettings">
-      <v-card>
+      <v-card :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
         <v-card-title>
           Settings
         </v-card-title>
@@ -126,7 +128,7 @@
           </v-list>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="this.applySettings" variant="flat" color="primary">
+          <v-btn @click="this.applySettings" variant="flat" :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }">
             <span>Apply</span>
           </v-btn>
           <v-btn @click="this.openSettings = false" variant="flat" color="secondary">
@@ -166,10 +168,22 @@ export default {
         "Unstoppable! 💪🎯",
         "Legendary performance! 🏆✨"
       ],
+      telegramTheme: {
+        bgColor: '#ffffff',
+        textColor: '#000000',
+        buttonColor: '#0088cc',
+      }
     }
   },
   created() {
     this.initializeGame();
+    this.detectTelegramTheme();
+  },
+
+  mounted() {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.onEvent('themeChanged', this.detectTelegramTheme)
+    }
   },
 
   computed: {
@@ -190,8 +204,22 @@ export default {
   },
 
   methods: {
-    showAlert() {
-      this.tg.showAlert('This is a Telegram Mini App alert!')
+    detectTelegramTheme() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const themeParams = window.Telegram.WebApp.themeParams;
+        this.telegramTheme.bgColor = themeParams.bg_color || '#ffffff';
+        this.telegramTheme.textColor = themeParams.text_color || '#000000';
+        this.telegramTheme.buttonColor = themeParams.button_color || '#0088cc';
+      } else {
+        this.telegramTheme.bgColor = '#ffffff';
+        this.telegramTheme.textColor = '#000000';
+        this.telegramTheme.buttonColor = '#0088cc';
+      }
+
+      document.documentElement.style.setProperty('--bg-color', this.telegramTheme.bgColor);
+      document.documentElement.style.setProperty('--text-color', this.telegramTheme.textColor);
+      document.documentElement.style.setProperty('--button-color', this.telegramTheme.buttonColor);
+      document.documentElement.style.setProperty('--matched-color', '#44cd5b'); // Optional custom color
     },
 
     generateCards() {
@@ -388,6 +416,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+  padding: 5px;
   justify-content: center;
   align-items: center;
   overflow: hidden;
@@ -398,7 +427,8 @@ export default {
   aspect-ratio: 1 / 1; /* Ensures cards are always square */
   width: 95%;
   height: 95%;
-  border: 2px solid #ccc;
+  border: 2px solid var(--text-color, #ccc);
+  background-color: var(--bg-color, #f5f5f5);;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -434,11 +464,11 @@ export default {
 
 .memory-card-back {
   transform: rotateY(180deg);
-  background-color: #59b7ef;
+  background-color: var(--button-color, #59b7ef);
 }
 
 .memory-card-back--matched {
-  background-color: #44cd5b;
+  background-color: var(--matched-color, #44cd5b);
 }
 
 .multiplier-notification {
