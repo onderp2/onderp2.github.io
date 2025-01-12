@@ -56,7 +56,7 @@
       </v-col>
     </v-row>
 
-    <div class="cards-grid" :style="{gridTemplateColumns: gridColumns}">
+    <div class="cards-grid">
       <v-card
           v-for="(card, index) in cards"
           :key="index"
@@ -165,17 +165,6 @@ export default {
       const seconds = this.timeElapsed % 60;
 
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
-    },
-
-    gridColumns() {
-      const totalCards = this.cards.length;
-      let columns = Math.ceil(Math.sqrt(totalCards));
-
-      while (totalCards % columns !== 0) {
-        columns--;
-      }
-
-      return `repeat(${columns}, 1fr)`;
     }
   },
 
@@ -196,7 +185,7 @@ export default {
     },
 
     flipCard(index) {
-      if (this.lockBoard || this.flippedCards.length === 2) return;
+      if (this.lockBoard || this.flippedCards.length === 2 || this.cards[index].match) return;
 
       if (this.flippedCards.includes(index) && this.flippedCards.length === 1) {
         this.cards[index].flipped = false;
@@ -365,7 +354,7 @@ export default {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   justify-content: center;
   align-items: center;
@@ -377,8 +366,8 @@ export default {
 
 .memory-card {
   aspect-ratio: 1 / 1; /* Ensures cards are always square */
-  width: 100%;
   max-width: 100px;
+  max-height: 100px;
   cursor: pointer;
   display: flex;
   align-items: center;
