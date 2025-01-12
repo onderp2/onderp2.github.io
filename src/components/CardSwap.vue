@@ -56,33 +56,25 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
-      <v-col v-for="(card, index) in this.cards"
-             :key="index"
-             cols="3"
-             class="d-flex justify-center"
+    <div class="cards-grid" :style="{gridTemplateColumns: gridColumns}">
+      <v-card
+          v-for="(card, index) in cards"
+          :key="index"
+          @click="flipCard(index)"
+          :elevation="card.flipped ? 12 : 2"
+          outlined
+          class="memory-card"
+          :class="{ flipped: card.flipped }"
+          :disabled="!isActiveSession"
       >
-        <v-card
-            @click="flipCard(index)"
-            :elevation="card.flipped ? 12 : 2"
-            outlined
-            class="memory-card"
-            :class="{
-                  'flipped': card.flipped
-                }"
-            :disabled="!isActiveSession"
-        >
-          <div class="memory-card-inner">
-            <div class="memory-card-front">
-              ?
-            </div>
-            <div class="memory-card-back" :class="{'memory-card-back--matched': card.match}">
-              {{ card.value }}
-            </div>
+        <div class="memory-card-inner">
+          <div class="memory-card-front">?</div>
+          <div class="memory-card-back" :class="{ 'memory-card-back--matched': card.match }">
+            {{ card.value }}
           </div>
-        </v-card>
-      </v-col>
-    </v-row>
+        </div>
+      </v-card>
+    </div>
 
     <v-row justify="center" class="mt-4 position-relative">
       <v-divider></v-divider>
@@ -173,6 +165,17 @@ export default {
       const seconds = this.timeElapsed % 60;
 
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+    },
+
+    gridColumns() {
+      const totalCards = this.cards.length;
+      let columns = Math.ceil(Math.sqrt(totalCards));
+
+      while (totalCards % columns !== 0) {
+        columns--;
+      }
+
+      return `repeat(${columns}, 1fr)`;
     }
   },
 
@@ -359,9 +362,23 @@ export default {
 }
 </script>
 <style scoped>
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
 .memory-card {
-  width: 100px;
-  height: 100px;
+  aspect-ratio: 1 / 1; /* Ensures cards are always square */
+  width: 100%;
+  max-width: 100px;
   cursor: pointer;
   display: flex;
   align-items: center;
