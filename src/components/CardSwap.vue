@@ -269,7 +269,7 @@ export default {
           secondCard.flipped = false;
           this.flippedCards = [];
           this.lockBoard = false;
-        }, 1000);
+        }, 500);
       }
     },
 
@@ -420,6 +420,7 @@ export default {
   align-items: center;
   justify-content: center;
   perspective: 1000px;
+  background-color: var(--card-base-bg-color);
 }
 
 .memory-card-inner {
