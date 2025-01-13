@@ -13,7 +13,6 @@
               <v-icon icon="mdi-theme-light-dark" @click="this.toggleTheme"></v-icon>
               <v-icon icon="mdi-cog" @click="this.openSettings = true">
               </v-icon>
-
               <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'">
                 {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
               </v-icon>
@@ -35,7 +34,7 @@
           :disabled="!isActiveSession"
       >
         <div class="memory-card-inner">
-          <div class="memory-card-front" :style="{backgroundColor: 'var(--text-color)', color: 'var(--bg-color)'}">
+          <div class="memory-card-front" :style="{backgroundColor: 'var(--card-bg-color)', color: 'var(--bg-color)'}">
             ?
           </div>
           <div class="memory-card-back"

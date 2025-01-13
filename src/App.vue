@@ -43,6 +43,7 @@ export default {
   --button-color: #0088cc;
   --matched-color: #44cd5b;
   --button-text-color: #ffffff;
+  --card-bg-color: #6d6191;
 }
 
 [data-theme="dark"] {
@@ -50,5 +51,6 @@ export default {
   --text-color: #fff;
   --button-color: #0088cc;
   --matched-color: #44cd5b;
+  --card-bg-color: #fff;
 }
 </style>
