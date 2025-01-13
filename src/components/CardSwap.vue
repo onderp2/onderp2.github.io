@@ -1,8 +1,8 @@
 <template>
-  <v-container class="game-container" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
+  <v-container class="game-container">
     <v-row no-gutters>
       <v-col cols="12">
-        <v-card elevation="0" :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
+        <v-card elevation="0" :style="{backgroundColor: 'var(--bg-color)', color: 'var(--text-color)'}">
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
@@ -10,10 +10,11 @@
           </template>
           <template v-slot:append>
             <div class="d-flex ga-3">
+              <v-icon icon="mdi-theme-light-dark" @click="this.toggleTheme"></v-icon>
               <v-icon icon="mdi-cog" @click="this.openSettings = true">
               </v-icon>
 
-              <v-icon @click="toggleSound" :color="isSoundEnabled ? telegramTheme.textColor : '#aaa'">
+              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'">
                 {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
               </v-icon>
             </div>
@@ -32,10 +33,11 @@
           :elevation="0"
           :class="{ flipped: card.flipped }"
           :disabled="!isActiveSession"
-          :style="{textColor: telegramTheme.bgColor}"
       >
         <div class="memory-card-inner">
-          <div class="memory-card-front">?</div>
+          <div class="memory-card-front" :style="{backgroundColor: 'var(--text-color)', color: 'var(--bg-color)'}">
+            ?
+          </div>
           <div class="memory-card-back"
                :class="{ 'memory-card-back--matched': card.match }"
                >
@@ -66,7 +68,11 @@
           <v-btn color="secondary" @click="resetGame">
             <span>Reset game</span>
           </v-btn>
-          <v-btn :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }" @click="startGame" :disabled="isActiveSession">
+          <v-btn
+              :style="{ backgroundColor: 'var(--button-color)', color: 'var(--button-text-color)' }"
+              @click="startGame"
+              :disabled="isActiveSession"
+          >
             <span>Start game</span>
           </v-btn>
         </div>
@@ -74,7 +80,7 @@
     </v-row>
 
     <v-dialog v-model="showResults" persistent transition="dialog-top-transition">
-      <v-card :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
+      <v-card :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
         <v-card-title class="text-center">
           <div class="d-flex flex-column ga-2">
             <div class="font-weight-bold">
@@ -107,12 +113,12 @@
     </v-dialog>
 
     <v-dialog v-model="this.openSettings">
-      <v-card :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
+      <v-card :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
         <v-card-title>
           Settings
         </v-card-title>
         <v-card-text class="px-5 py-0">
-          <v-list :style="{ backgroundColor: telegramTheme.bgColor, color: telegramTheme.textColor }">
+          <v-list :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
             <v-list-item class="mr-0 pa-0">
               <template v-slot:prepend>
                 Cards number:
@@ -178,13 +184,6 @@ export default {
   },
   created() {
     this.initializeGame();
-    this.detectTelegramTheme();
-  },
-
-  mounted() {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.onEvent('themeChanged', this.detectTelegramTheme)
-    }
   },
 
   computed: {
@@ -205,24 +204,6 @@ export default {
   },
 
   methods: {
-    detectTelegramTheme() {
-      if (window.Telegram && window.Telegram.WebApp) {
-        const themeParams = window.Telegram.WebApp.themeParams;
-        this.telegramTheme.bgColor = themeParams.bg_color || '#ffffff';
-        this.telegramTheme.textColor = themeParams.text_color || '#000000';
-        this.telegramTheme.buttonColor = themeParams.button_color || '#0088cc';
-      } else {
-        this.telegramTheme.bgColor = '#ffffff';
-        this.telegramTheme.textColor = '#000000';
-        this.telegramTheme.buttonColor = '#0088cc';
-      }
-
-      document.documentElement.style.setProperty('--bg-color', this.telegramTheme.bgColor);
-      document.documentElement.style.setProperty('--text-color', this.telegramTheme.textColor);
-      document.documentElement.style.setProperty('--button-color', this.telegramTheme.buttonColor);
-      document.documentElement.style.setProperty('--matched-color', '#44cd5b'); // Optional custom color
-    },
-
     generateCards() {
       const value = Array.from({length: this.cardsCount}, (_, i) => i + 1);
       const deck = [...value, ...value].sort(() => Math.random() - 0.5);
@@ -402,6 +383,12 @@ export default {
       const randomIndex = Math.floor(Math.random() * this.congratulationMessages.length);
 
       return this.congratulationMessages[randomIndex];
+    },
+
+    toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
     }
   }
 }
@@ -412,6 +399,7 @@ export default {
   display: grid;
   grid-template-rows: auto 1fr auto;
   height: 100vh;
+  background-color: var(--bg-color);
 }
 .cards-grid {
   display: grid;
@@ -427,8 +415,7 @@ export default {
 .memory-card {
   aspect-ratio: 1 / 1; /* Ensures cards are always square */
   width: 95%;
-  height: 95%;
-  border: 2px solid var(--button-color, #ccc);
+  height: 96%;
   cursor: pointer;
   display: flex;
   align-items: center;

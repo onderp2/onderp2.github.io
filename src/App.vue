@@ -35,3 +35,20 @@ export default {
   }
 }
 </script>
+
+<style>
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --button-color: #0088cc;
+  --matched-color: #44cd5b;
+  --button-text-color: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1e1e1e;
+  --text-color: #fff;
+  --button-color: #0088cc;
+  --matched-color: #44cd5b;
+}
+</style>
