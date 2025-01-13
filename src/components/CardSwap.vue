@@ -10,10 +10,10 @@
           </template>
           <template v-slot:append>
             <div class="d-flex ga-3">
-              <v-icon icon="mdi-theme-light-dark" @click="this.toggleTheme"></v-icon>
-              <v-icon icon="mdi-cog" @click="this.openSettings = true">
-              </v-icon>
-              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'">
+              <v-icon icon="mdi-theme-light-dark" @click="this.toggleTheme" size="20"/>
+              <v-icon icon="mdi-cog" @click="this.openSettings = true" size="20"/>
+              <v-icon icon="mdi-head-question" @click="this.showExplanation = true" size="20"/>
+              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'" size="20">
                 {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
               </v-icon>
             </div>
@@ -78,6 +78,34 @@
       </v-col>
     </v-row>
 
+    <!-- Game explanation -->
+    <v-dialog v-model="showExplanation">
+      <v-card :style="{color: 'var(--text-color)'}">
+        <v-card-title class="text-center">
+          <span>Game explanation</span>
+        </v-card-title>
+        <v-card-text class="text-justify">
+          <div>
+            Memory game is designed to find two repeating cards.<br>
+            If you click on two different cards - cards get flipped back.<br>
+            If you click on two repeating cards - they got guessed and total score of the session increases.
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer>
+          </v-spacer>
+            <v-btn @click="this.showExplanation = false"
+                   variant="flat"
+                   :style="{ backgroundColor: 'var(--button-color)', color: 'var(--button-text-color)' }">
+              Got it!
+            </v-btn>
+          <v-spacer>
+          </v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Game results -->
     <v-dialog v-model="showResults" persistent transition="dialog-top-transition">
       <v-card :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
         <v-card-title class="text-center">
@@ -101,7 +129,7 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }" @click="startGame" variant="flat">
+          <v-btn @click="startGame" variant="flat">
             Play again
           </v-btn>
           <v-btn color="secondary" @click="showResults=false" variant="flat">
@@ -111,6 +139,7 @@
       </v-card>
     </v-dialog>
 
+    <!-- Settings -->
     <v-dialog v-model="this.openSettings">
       <v-card :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
         <v-card-title>
@@ -134,7 +163,7 @@
           </v-list>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="this.applySettings" variant="flat" :style="{ backgroundColor: telegramTheme.buttonColor, color: '#fff' }">
+          <v-btn @click="this.applySettings" variant="flat">
             <span>Apply</span>
           </v-btn>
           <v-btn @click="this.openSettings = false" variant="flat" color="secondary">
@@ -160,6 +189,7 @@ export default {
       timer: null,
       timeElapsed: 0,
       showResults: false,
+      showExplanation: false,
       isActiveSession: false,
       openSettings: false,
       settingsCountCards: 6,
@@ -174,11 +204,6 @@ export default {
         "Unstoppable! 💪🎯",
         "Legendary performance! 🏆✨"
       ],
-      telegramTheme: {
-        bgColor: '#ffffff',
-        textColor: '#000000',
-        buttonColor: '#0088cc',
-      }
     }
   },
   created() {
