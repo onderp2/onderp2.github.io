@@ -3,6 +3,11 @@
     <v-row no-gutters>
       <v-col cols="12">
         <v-card elevation="0" :style="{backgroundColor: 'var(--bg-color)', color: 'var(--text-color)'}">
+          <template v-slot:prepend>
+            <v-icon @click="()=> {this.$router.push('/')}">
+              mdi-home
+            </v-icon>
+          </template>
           <template v-slot:title>
             <div class="text-center text-md-h4 font-weight-bold text-sm-h5">
               Memory game
@@ -80,7 +85,7 @@
 
     <!-- Game explanation -->
     <v-dialog v-model="showExplanation">
-      <v-card :style="{color: 'var(--text-color)'}">
+      <v-card :style="{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }">
         <v-card-title class="text-center">
           <span>Game explanation</span>
         </v-card-title>
@@ -163,7 +168,10 @@
           </v-list>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="this.applySettings" variant="flat">
+          <v-btn @click="this.applySettings"
+                 variant="flat"
+                 :style="{ backgroundColor: 'var(--button-color)', color: 'var(--button-text-color)' }"
+          >
             <span>Apply</span>
           </v-btn>
           <v-btn @click="this.openSettings = false" variant="flat" color="secondary">

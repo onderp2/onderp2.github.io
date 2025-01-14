@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <HelloWorld/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -51,6 +51,7 @@ export default {
   --bg-color: #1e1e1e;
   --text-color: #fff;
   --button-color: #0088cc;
+  --button-text-color: #ffffff;
   --matched-color: #44cd5b;
   --card-bg-color: #fff;
   --card-base-bg-color: #e5d7d7;
