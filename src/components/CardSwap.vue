@@ -134,7 +134,7 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="startGame" variant="flat">
+          <v-btn @click="startGame" variant="flat"                    :style="{ backgroundColor: 'var(--button-color)', color: 'var(--button-text-color)' }">
             Play again
           </v-btn>
           <v-btn color="secondary" @click="showResults=false" variant="flat">
