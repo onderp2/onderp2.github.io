@@ -15,62 +15,16 @@
         </v-card>
         <v-divider opacity="100"/>
       </v-col>
-      <v-col cols="12">
-        <v-card>
-          <template v-slot:prepend>
-            <div class="d-flex align-center ga-2">
-              <div>
-                Duration:
-              </div>
-              <v-menu
-                  persistent
-              >
-                <template v-slot:activator="{props}">
-                  <v-btn
-                      v-bind="props"
-                      @click="this.selectingDuration = !this.selectingDuration"
-                  >
-                    {{duration}} sec
-
-                    <template v-slot:append>
-                      <v-icon :icon="this.selectingDuration ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
-                      </v-icon>
-                    </template>
-                  </v-btn>
-                </template>
-
-                <v-list color="transparent">
-                  <v-list-item
-                      v-for="(item, index) in durations"
-                      :key="index"
-                      @click="setDuration(item)"
-                  >
-                    {{item}} seconds
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </div>
-          </template>
-          <template v-slot:append>
-            <v-btn
-                variant="flat"
-                color="primary"
-                @click="generateExpression"
-            >
-              Start
-            </v-btn>
-          </template>
-        </v-card>
-      </v-col>
     </v-row>
 
-    <v-row v-if="expression.isReady">
+    <v-row >
       <v-col cols="12">
-        <v-card elevation="6" >
+        <v-card elevation="6" v-if="this.expression.isReady">
           <v-card-title class="text-center px-4">
             <span class="font-weight-bold opacity-100">Solve</span>
             <v-divider/>
           </v-card-title>
+
           <v-card-subtitle class="text-center text-h4 font-weight-bold text-black opacity-100 my-4 ">
             {{this.expression.expressionString}}
           </v-card-subtitle>
@@ -78,6 +32,7 @@
             <div class="w-100 d-flex align-center justify-space-between">
               <v-btn
                   v-for="(option, index) in this.expression.options"
+                  v-if="this.expression.options"
                   :key="index"
                   variant="flat"
                   color="primary"
@@ -86,6 +41,7 @@
                   @click="setAnswer(option, index)"
                   class="button-choice"
                   :class="{ selected: option.selected, wrong: option?.wrong }"
+                  :disabled="!isGameActive"
 
               >
                 <span class="text-h5">
@@ -95,8 +51,150 @@
             </div>
           </v-card-actions>
         </v-card>
+
+
+        <v-card v-else>
+          <v-card-title class="text-center px-4">
+            <span class="font-weight-bold opacity-100">Settings</span>
+            <v-divider/>
+          </v-card-title>
+          <v-card-text>
+            <div class="d-flex flex-column ga-4 mt-2">
+              <div class="d-flex align-center ga-2">
+                <div>
+                  Duration:
+                </div>
+                <v-menu
+                    persistent
+                >
+                  <template v-slot:activator="{props}">
+                    <v-btn
+                        v-bind="props"
+                        @click="this.selectingDuration = !this.selectingDuration"
+                    >
+                      {{duration}} sec
+
+                      <template v-slot:append>
+                        <v-icon :icon="this.selectingDuration ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
+                        </v-icon>
+                      </template>
+                    </v-btn>
+                  </template>
+
+                  <v-list color="transparent">
+                    <v-list-item
+                        v-for="(item, index) in durations"
+                        :key="index"
+                        @click="setDuration(item)"
+                    >
+                      {{item}} seconds
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+
+              <div class="d-flex align-center ga-2">
+                <div>Difficulty:</div>
+                <v-menu
+                    persistent
+                >
+                  <template v-slot:activator="{props}">
+                    <v-btn
+                        v-bind="props"
+                        @click="this.selectingDifficulty = !this.selectingDifficulty"
+                    >
+                      {{difficulty}}
+                      <template v-slot:append>
+                        <v-icon :icon="this.selectingDifficulty ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
+                        </v-icon>
+                      </template>
+                    </v-btn>
+                  </template>
+
+                  <v-list color="transparent">
+                    <v-list-item
+                        v-for="(item, index) in difficulties"
+                        :key="index"
+                        @click="setDifficulty(item)"
+                    >
+                      {{item}}
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+            </div>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer/>
+            <v-btn
+                color="primary"
+                variant="flat"
+                @click="startGame"
+            >
+              Start game
+            </v-btn>
+            <v-spacer/>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+      <v-col cols="12" v-if="this.expression.isReady">
+        <div class="d-flex justify-center ga-1">
+          <v-chip color="secondary">
+            Score: {{this.gameMode.score}}
+          </v-chip>
+          <v-chip color="primary">
+            Time left: {{this.gameMode.leftSeconds}}
+          </v-chip>
+        </div>
       </v-col>
     </v-row>
+
+    <v-row v-if="this.expression.isReady">
+      <v-col cols="12">
+        <v-card elevation="0">
+          <v-card-actions class="d-flex justify-center ga-2">
+            <v-btn variant="flat" color="primary" @click="endGame">
+              Reset game
+            </v-btn>
+            <v-btn variant="flat" color="secondary" @click="startGame">
+              New game
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Game result -->
+    <v-dialog v-model="this.showResults" transition="dialog-top-transition" persistent>
+      <v-card>
+        <v-card-title class="text-center">
+          Game results:
+        </v-card-title>
+        <v-card-text class="pa-0 px-4">
+          <v-list>
+            <v-list-item>
+              <v-list-item-title>
+                Score: {{this.gameMode.score}}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>
+                Difficulty: {{this.difficulty}}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" variant="flat" @click="startGame">
+            New game
+          </v-btn>
+          <v-btn color="secondary" variant="flat" @click="showResults=false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -116,10 +214,60 @@ export default {
       duration: 30,
       durations: [15, 30, 45, 60],
       selectingDuration: false,
+      difficulty: 'easy',
+      difficulties: ['easy', 'normal', 'hard', 'god'],
+      selectingDifficulty: false,
+      gameMode: {
+        timer: null,
+        leftSeconds: null,
+        score: 0,
+      },
+      isGameActive: false,
+      showResults: false,
     }
   },
 
   methods: {
+    startGame() {
+      this.stopGame();
+      this.endGame();
+      this.generateExpression();
+      this.expression.isReady = true;
+      this.isGameActive = true;
+      this.showResults = false;
+      this.setTimer();
+    },
+
+    setTimer() {
+      this.gameMode.leftSeconds = this.duration;
+      this.gameMode.timer = setInterval(() => {
+
+        if (this.gameMode.leftSeconds > 0) {
+          this.gameMode.leftSeconds--;
+        } else {
+          this.stopGame();
+        }
+      }, 1000);
+    },
+
+    stopGame() {
+      clearInterval(this.gameMode.timer);
+      this.isGameActive = false;
+      this.showResults = true;
+    },
+
+    endGame() {
+      clearInterval(this.gameMode.timer);
+
+      this.expression.isReady = false;
+      this.expression.options = [];
+      this.expression.answer = null;
+      this.expression.expressionString = '';
+
+      this.gameMode.score = 0;
+      this.gameMode.leftSeconds = 0;
+    },
+
     generateExpression() {
       const number1 = Math.floor((Math.random() * 10) + 1);
       const number2 = Math.floor((Math.random() * 10) + 1);
@@ -132,23 +280,31 @@ export default {
       const answer = eval(expressionString);
       let options = [{variant: answer, selected:false}];
 
+      let generatedOptions = [answer];
+
       while (options.length < 4) {
         const randomOption = Math.floor(Math.random() * 20) - 10;
-        if (!options.includes({variant: randomOption, selected: false})) {
+        if (!generatedOptions.includes(randomOption)) {
           options.push({variant: randomOption, selected: false});
+          generatedOptions.push(randomOption);
         }
       }
+
       options.sort(() => Math.random() - 0.5);
 
       this.expression.options = options;
       this.expression.answer = answer;
-      this.expression.isReady = true;
       this.expression.expressionString = expressionString + ' = ?';
     },
 
     setDuration(duration) {
       this.duration = duration;
       this.selectingDuration = !this.selectingDuration;
+    },
+
+    setDifficulty(difficulty) {
+      this.difficulty = difficulty;
+      this.selectingDifficulty = !this.selectingDifficulty;
     },
 
     setAnswer(option, index) {
@@ -159,9 +315,17 @@ export default {
 
       if (option.variant === this.expression.answer) {
         this.expression.options[index].selected = true;
+
+        this.gameMode.score++;
       } else {
         this.expression.options[index].wrong = true;
+
+        this.gameMode.score--;
       }
+
+      setTimeout(() => {
+        this.generateExpression();
+      }, 500);
     }
   }
 }
