@@ -15,8 +15,8 @@
           <template v-slot:append>
             <div class="d-flex ga-3">
               <v-icon icon="mdi-cog" @click="this.settings.openSettings = true" size="20"/>
-              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'" size="20">
-                {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
+              <v-icon @click="toggleSound" :color="settings.isSoundEnabled ? 'var(--text-color)' : '#aaa'" size="20">
+                {{settings.isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
               </v-icon>
             </div>
           </template>
@@ -49,7 +49,7 @@
                   @click="setAnswer(option, index)"
                   class="button-choice"
                   :class="{ selected: option.selected, wrong: option?.wrong }"
-                  :disabled="!isGameActive"
+                  :disabled="!gameMode.isGameActive"
 
               >
                 <span class="text-h5">
@@ -89,7 +89,7 @@
       <v-col cols="12">
         <v-card elevation="0">
           <v-card-actions class="d-flex justify-center ga-2">
-            <v-btn variant="flat" color="primary" @click="endGame">
+            <v-btn variant="flat" color="primary" @click="resetGame">
               Reset game
             </v-btn>
             <v-btn variant="flat" color="secondary" @click="startGame">
@@ -231,8 +231,6 @@ export default {
       expression: {
         options: [],
         answer: null,
-        selectedAnswer: null,
-        isReady: false,
         expressionString: ''
       },
       settings: {
@@ -241,6 +239,7 @@ export default {
         openSettings: false,
         selectingDifficulty: false,
         selectingDuration: false,
+        isSoundEnabled: true,
       },
       durations: [15, 30, 45, 60],
       difficulties: ['easy', 'normal', 'hard', 'god'],
@@ -256,48 +255,51 @@ export default {
         score: 0,
         duration: 30,
         difficulty: 'easy',
+        isGameActive: false,
       },
-      isGameActive: false,
       showResults: false,
-      isSoundEnabled: true,
       countdownPlaying: false,
     }
   },
 
   methods: {
+    resetExpression() {
+      this.expression.options = [];
+      this.expression.answer = null;
+      this.expression.expressionString = '';
+    },
+
+    resetGameMode() {
+      clearInterval(this.gameMode.timer);
+      this.gameMode.leftSeconds = 0;
+      this.gameMode.score = 0;
+      this.gameMode.duration = this.settings.duration;
+      this.gameMode.difficulty = this.settings.difficulty;
+      this.gameMode.isGameActive = false;
+    },
+
     startGame() {
-      this.stopGame();
-      this.endGame();
+      // this.stopGame();
+      this.resetGame();
       this.generateExpression();
-      this.expression.isReady = true;
-      this.isGameActive = true;
-      this.showResults = false;
+      this.gameMode.isGameActive = true;
+      // this.showResults = false;
       this.setTimer();
     },
 
     stopGame() {
       clearInterval(this.gameMode.timer);
 
-      if (this.isGameActive) {
-        this.playFinishGame();
-      }
-
-      this.isGameActive = false;
+      this.playFinishGame();
+      this.gameMode.isGameActive = false;
       this.showResults = true;
     },
 
-    endGame() {
-      clearInterval(this.gameMode.timer);
-
-      this.expression.isReady = false;
-      this.expression.options = [];
-      this.expression.answer = null;
-      this.expression.expressionString = '';
-
-      this.gameMode.score = 0;
-      this.gameMode.leftSeconds = 0;
-      this.isGameActive = false;
+    resetGame() {
+      this.resetExpression();
+      this.resetGameMode();
       this.countdownPlaying = false;
+      this.showResults = false;
     },
 
     setTimer() {
@@ -468,32 +470,32 @@ export default {
     playSuccessSound() {
       const sound = new Audio('/audio/select_number.wav');
 
-      if (this.isSoundEnabled) sound?.play();
+      if (this.settings.isSoundEnabled) sound?.play();
     },
 
     playMissSound() {
       const sound = new Audio('/audio/math_miss.wav');
 
-      if (this.isSoundEnabled) sound?.play();
+      if (this.settings.isSoundEnabled) sound?.play();
     },
 
     playFinishGame() {
       const sound = new Audio('/audio/math_finish.wav');
 
-      if (this.isSoundEnabled) sound?.play();
+      if (this.settings.isSoundEnabled) sound?.play();
     },
 
     playCountdown() {
       const sound = new Audio('/audio/math_countdown.wav');
 
-      if (this.isSoundEnabled && !this.countdownPlaying) {
+      if (this.settings.isSoundEnabled && !this.countdownPlaying) {
         this.countdownPlaying = true;
         sound?.play();
       }
     },
 
     toggleSound() {
-      this.isSoundEnabled = !this.isSoundEnabled;
+      this.settings.isSoundEnabled = !this.settings.isSoundEnabled;
     }
   }
 }
