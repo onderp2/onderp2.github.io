@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="game-container">
     <v-row>
       <v-col cols="12">
         <v-card elevation="0">
@@ -26,10 +26,10 @@
     </v-row>
 
     <v-row >
-      <v-col cols="12">
-        <v-card elevation="6">
+      <v-col cols="12" class="d-flex flex-column justify-center">
+        <v-card elevation="6" class="h-75 d-flex flex-column justify-space-around">
           <v-card-title class="text-center px-4">
-            <span class="font-weight-bold opacity-100">Solve</span>
+            <span class="font-weight-bold opacity-100 text-h5">Solve</span>
             <v-divider/>
           </v-card-title>
 
@@ -72,7 +72,9 @@
           </v-card-actions>
         </v-card>
       </v-col>
+    </v-row>
 
+    <v-row>
       <v-col cols="12">
         <div class="d-flex justify-center ga-1">
           <v-chip color="secondary">
@@ -83,9 +85,6 @@
           </v-chip>
         </div>
       </v-col>
-    </v-row>
-
-    <v-row>
       <v-col cols="12">
         <v-card elevation="0">
           <v-card-actions class="d-flex justify-center ga-2">
@@ -279,11 +278,9 @@ export default {
     },
 
     startGame() {
-      // this.stopGame();
       this.resetGame();
       this.generateExpression();
       this.gameMode.isGameActive = true;
-      // this.showResults = false;
       this.setTimer();
     },
 
@@ -509,4 +506,11 @@ export default {
 .button-choice.wrong {
   background-color: red !important;
 }
+
+.game-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
 </style>
