@@ -12,6 +12,14 @@
               Math challenge
             </div>
           </template>
+          <template v-slot:append>
+            <div class="d-flex ga-3">
+              <v-icon icon="mdi-cog" @click="this.settings.openSettings = true" size="20"/>
+              <v-icon @click="toggleSound" :color="isSoundEnabled ? 'var(--text-color)' : '#aaa'" size="20">
+                {{isSoundEnabled ? 'mdi-volume-high': 'mdi-volume-off'}}
+              </v-icon>
+            </div>
+          </template>
         </v-card>
         <v-divider opacity="100"/>
       </v-col>
@@ -19,20 +27,20 @@
 
     <v-row >
       <v-col cols="12">
-        <v-card elevation="6" v-if="this.expression.isReady">
+        <v-card elevation="6">
           <v-card-title class="text-center px-4">
             <span class="font-weight-bold opacity-100">Solve</span>
             <v-divider/>
           </v-card-title>
 
           <v-card-subtitle class="text-center text-h4 font-weight-bold text-black opacity-100 my-4 ">
-            {{this.expression.expressionString}}
+            {{expression.expressionString ? expression.expressionString : '? + ? = ???'}}
           </v-card-subtitle>
           <v-card-actions >
             <div class="w-100 d-flex align-center justify-space-between">
               <v-btn
+                  v-if="this.expression.options.length>0"
                   v-for="(option, index) in this.expression.options"
-                  v-if="this.expression.options"
                   :key="index"
                   variant="flat"
                   color="primary"
@@ -48,97 +56,24 @@
                 {{option.variant}}
                 </span>
               </v-btn>
+              <v-btn v-else
+                     v-for="(option, index) in ['?', '?', '?', '?']"
+                     variant="flat"
+                     color="primary"
+                     height="60"
+                     width="60"
+                     class="button-choice"
+              >
+                <span class="text-h5">
+                {{option}}
+                </span>
+              </v-btn>
             </div>
-          </v-card-actions>
-        </v-card>
-
-
-        <v-card v-else>
-          <v-card-title class="text-center px-4">
-            <span class="font-weight-bold opacity-100">Settings</span>
-            <v-divider/>
-          </v-card-title>
-          <v-card-text>
-            <div class="d-flex flex-column ga-4 mt-2">
-              <div class="d-flex align-center ga-2">
-                <div>
-                  Duration:
-                </div>
-                <v-menu
-                    persistent
-                >
-                  <template v-slot:activator="{props}">
-                    <v-btn
-                        v-bind="props"
-                        @click="this.selectingDuration = !this.selectingDuration"
-                    >
-                      {{duration}} sec
-
-                      <template v-slot:append>
-                        <v-icon :icon="this.selectingDuration ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
-                        </v-icon>
-                      </template>
-                    </v-btn>
-                  </template>
-
-                  <v-list color="transparent">
-                    <v-list-item
-                        v-for="(item, index) in durations"
-                        :key="index"
-                        @click="setDuration(item)"
-                    >
-                      {{item}} seconds
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </div>
-
-              <div class="d-flex align-center ga-2">
-                <div>Difficulty:</div>
-                <v-menu
-                    persistent
-                >
-                  <template v-slot:activator="{props}">
-                    <v-btn
-                        v-bind="props"
-                        @click="this.selectingDifficulty = !this.selectingDifficulty"
-                    >
-                      {{difficulty}}
-                      <template v-slot:append>
-                        <v-icon :icon="this.selectingDifficulty ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
-                        </v-icon>
-                      </template>
-                    </v-btn>
-                  </template>
-
-                  <v-list color="transparent">
-                    <v-list-item
-                        v-for="(item, index) in difficulties"
-                        :key="index"
-                        @click="setDifficulty(item)"
-                    >
-                      {{item}}
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </div>
-            </div>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer/>
-            <v-btn
-                color="primary"
-                variant="flat"
-                @click="startGame"
-            >
-              Start game
-            </v-btn>
-            <v-spacer/>
           </v-card-actions>
         </v-card>
       </v-col>
-      <v-col cols="12" v-if="this.expression.isReady">
+
+      <v-col cols="12">
         <div class="d-flex justify-center ga-1">
           <v-chip color="secondary">
             Score: {{this.gameMode.score}}
@@ -150,7 +85,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="this.expression.isReady">
+    <v-row>
       <v-col cols="12">
         <v-card elevation="0">
           <v-card-actions class="d-flex justify-center ga-2">
@@ -180,7 +115,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-title>
-                Difficulty: {{this.difficulty}}
+                Difficulty: {{this.gameMode.difficulty}}
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -190,6 +125,95 @@
             New game
           </v-btn>
           <v-btn color="secondary" variant="flat" @click="showResults=false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="this.settings.openSettings">
+      <v-card>
+        <v-card-title class="text-center px-4">
+          <span class="font-weight-bold opacity-100">Settings</span>
+          <v-divider/>
+        </v-card-title>
+        <v-card-text>
+          <div class="d-flex flex-column ga-4 mt-2">
+            <div class="d-flex align-center ga-2">
+              <div>
+                Duration:
+              </div>
+              <v-menu
+                  persistent
+              >
+                <template v-slot:activator="{props}">
+                  <v-btn
+                      v-bind="props"
+                      @click="this.settings.selectingDuration = !this.settings.selectingDuration"
+                  >
+                    {{this.settings.duration}} sec
+
+                    <template v-slot:append>
+                      <v-icon :icon="this.settings.selectingDuration ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
+                      </v-icon>
+                    </template>
+                  </v-btn>
+                </template>
+
+                <v-list color="transparent">
+                  <v-list-item
+                      v-for="(item, index) in durations"
+                      :key="index"
+                      @click="setDuration(item)"
+                  >
+                    {{item}} seconds
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+
+            <div class="d-flex align-center ga-2">
+              <div>Difficulty:</div>
+              <v-menu
+                  persistent
+              >
+                <template v-slot:activator="{props}">
+                  <v-btn
+                      v-bind="props"
+                      @click="this.settings.selectingDifficulty = !this.settings.selectingDifficulty"
+                  >
+                    {{this.settings.difficulty}}
+                    <template v-slot:append>
+                      <v-icon :icon="this.settings.selectingDifficulty ? 'mdi-arrow-up-drop-circle-outline': 'mdi-arrow-down-drop-circle-outline'">
+                      </v-icon>
+                    </template>
+                  </v-btn>
+                </template>
+
+                <v-list color="transparent">
+                  <v-list-item
+                      v-for="(item, index) in this.difficulties"
+                      :key="index"
+                      @click="setDifficulty(item)"
+                  >
+                    {{item}}
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn
+              color="primary"
+              variant="flat"
+              @click="applySettings"
+          >
+            Apply
+          </v-btn>
+          <v-btn color="secondary" variant="flat" @click="this.settings.openSettings=false">
             Close
           </v-btn>
         </v-card-actions>
@@ -211,10 +235,14 @@ export default {
         isReady: false,
         expressionString: ''
       },
-      duration: 30,
+      settings: {
+        duration: 30,
+        difficulty: 'easy',
+        openSettings: false,
+        selectingDifficulty: false,
+        selectingDuration: false,
+      },
       durations: [15, 30, 45, 60],
-      selectingDuration: false,
-      difficulty: 'easy',
       difficulties: ['easy', 'normal', 'hard', 'god'],
       difficultyScores: {
         "easy": 1,
@@ -222,14 +250,17 @@ export default {
         "hard": 3,
         "god": 4
       },
-      selectingDifficulty: false,
       gameMode: {
         timer: null,
-        leftSeconds: null,
+        leftSeconds: 0,
         score: 0,
+        duration: 30,
+        difficulty: 'easy',
       },
       isGameActive: false,
       showResults: false,
+      isSoundEnabled: true,
+      countdownPlaying: false,
     }
   },
 
@@ -244,20 +275,13 @@ export default {
       this.setTimer();
     },
 
-    setTimer() {
-      this.gameMode.leftSeconds = this.duration;
-      this.gameMode.timer = setInterval(() => {
-
-        if (this.gameMode.leftSeconds > 0) {
-          this.gameMode.leftSeconds--;
-        } else {
-          this.stopGame();
-        }
-      }, 1000);
-    },
-
     stopGame() {
       clearInterval(this.gameMode.timer);
+
+      if (this.isGameActive) {
+        this.playFinishGame();
+      }
+
       this.isGameActive = false;
       this.showResults = true;
     },
@@ -272,12 +296,31 @@ export default {
 
       this.gameMode.score = 0;
       this.gameMode.leftSeconds = 0;
+      this.isGameActive = false;
+      this.countdownPlaying = false;
+    },
+
+    setTimer() {
+      this.gameMode.leftSeconds = this.gameMode.duration;
+      this.gameMode.timer = setInterval(() => {
+
+        if (this.gameMode.leftSeconds > 0) {
+          this.gameMode.leftSeconds--;
+
+          if (this.gameMode.leftSeconds <= 2 && this.gameMode.leftSeconds > 0) {
+            this.playCountdown();
+          }
+
+        } else {
+          this.stopGame();
+        }
+      }, 1000);
     },
 
     generateExpression() {
       let number1, number2, operations, operation;
 
-      switch (this.difficulty) {
+      switch (this.gameMode.difficulty) {
         case 'easy':
           number1 = Math.floor((Math.random() * 10) + 1);
           number2 = Math.floor((Math.random() * 10) + 1);
@@ -382,13 +425,20 @@ export default {
       this.expression.expressionString = expressionString + ' = ?';
     },
 
+    applySettings() {
+      this.gameMode.difficulty = this.settings.difficulty;
+      this.gameMode.duration = this.settings.duration;
+
+      this.settings.openSettings = false;
+    },
+
     setDuration(duration) {
-      this.duration = duration;
+      this.settings.duration = duration;
       this.selectingDuration = !this.selectingDuration;
     },
 
     setDifficulty(difficulty) {
-      this.difficulty = difficulty;
+      this.settings.difficulty = difficulty;
       this.selectingDifficulty = !this.selectingDifficulty;
     },
 
@@ -399,18 +449,51 @@ export default {
       });
 
       if (option.variant === this.expression.answer) {
+        this.playSuccessSound();
+
         this.expression.options[index].selected = true;
-
-        this.gameMode.score += this.difficultyScores[this.difficulty];
+        this.gameMode.score += this.difficultyScores[this.gameMode.difficulty];
       } else {
-        this.expression.options[index].wrong = true;
+        this.playMissSound();
 
-        this.gameMode.score -= this.difficultyScores[this.difficulty];
+        this.expression.options[index].wrong = true;
+        this.gameMode.score -= this.difficultyScores[this.gameMode.difficulty];
       }
 
       setTimeout(() => {
         this.generateExpression();
       }, 500);
+    },
+
+    playSuccessSound() {
+      const sound = new Audio('/audio/select_number.wav');
+
+      if (this.isSoundEnabled) sound?.play();
+    },
+
+    playMissSound() {
+      const sound = new Audio('/audio/math_miss.wav');
+
+      if (this.isSoundEnabled) sound?.play();
+    },
+
+    playFinishGame() {
+      const sound = new Audio('/audio/math_finish.wav');
+
+      if (this.isSoundEnabled) sound?.play();
+    },
+
+    playCountdown() {
+      const sound = new Audio('/audio/math_countdown.wav');
+
+      if (this.isSoundEnabled && !this.countdownPlaying) {
+        this.countdownPlaying = true;
+        sound?.play();
+      }
+    },
+
+    toggleSound() {
+      this.isSoundEnabled = !this.isSoundEnabled;
     }
   }
 }
