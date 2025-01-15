@@ -216,6 +216,12 @@ export default {
       selectingDuration: false,
       difficulty: 'easy',
       difficulties: ['easy', 'normal', 'hard', 'god'],
+      difficultyScores: {
+        "easy": 1,
+        "normal": 2,
+        "hard": 3,
+        "god": 4
+      },
       selectingDifficulty: false,
       gameMode: {
         timer: null,
@@ -269,21 +275,100 @@ export default {
     },
 
     generateExpression() {
-      const number1 = Math.floor((Math.random() * 10) + 1);
-      const number2 = Math.floor((Math.random() * 10) + 1);
-      const operations = ['+', '-', '*'];
+      let number1, number2, operations, operation;
 
-      const operation = operations[Math.floor(Math.random() * operations.length)];
+      switch (this.difficulty) {
+        case 'easy':
+          number1 = Math.floor((Math.random() * 10) + 1);
+          number2 = Math.floor((Math.random() * 10) + 1);
+          operations = ['+', '-'];
+
+          operation = operations[Math.floor(Math.random() * operations.length)];
+
+          break;
+
+        case 'normal':
+          number1 = Math.floor((Math.random() * 20) + 1);
+          number2 = Math.floor((Math.random() * 20) + 1);
+          operations = ['+', '-', '*'];
+
+          operation = operations[Math.floor(Math.random() * operations.length)];
+
+          break;
+
+        case 'hard':
+          operations = ['+', '-', '*', '/'];
+          operation = operations[Math.floor(Math.random() * operations.length)];
+
+          number2 = Math.floor((Math.random() * 50) + 1);
+
+          if (operation === '/') {
+            number1 = number2 * (Math.floor(Math.random() * 10) + 1);
+          } else {
+            number1 = Math.floor((Math.random() * 50) + 1);
+          }
+
+          break;
+        case 'god':
+          number2 = Math.floor((Math.random() * 70) + 1);
+          let number3 = Math.floor(Math.random() * 10) +1;
+
+          let firstOperations = ['+', '-', '*'];
+          let firstOperation = firstOperations[Math.floor(Math.random() * firstOperations.length)]
+
+          let subResult;
+
+          switch (firstOperation) {
+            case '+':
+              subResult = number2 + number3;
+              break;
+            case '-':
+              subResult = number2 - number3;
+              break;
+            case '*':
+              subResult = number2 * number3;
+              break;
+          }
+
+          operations = ['+', '-', '*', '/'];
+          operation = operations[Math.floor(Math.random() * operations.length)];
+
+          if (operation === '/') {
+            number1 = subResult * (Math.floor(Math.random() * 10) + 1);
+          } else {
+            number1 = Math.floor((Math.random() * 50) + 1);
+          }
+
+          number2 = `(${number2} ${firstOperation} ${number3})`;
+
+          break;
+      }
 
       const expressionString = `${number1} ${operation} ${number2}`;
 
-      const answer = eval(expressionString);
+      let answer;
+
+      switch (operation) {
+        case '+':
+          answer = number1 + eval(number2);
+          break;
+        case '-':
+          answer = number1 - eval(number2);
+          break;
+        case '*':
+          answer = number1 * eval(number2);
+          break;
+        case '/':
+          answer = number1 / eval(number2);
+          break;
+      }
+
       let options = [{variant: answer, selected:false}];
 
       let generatedOptions = [answer];
 
       while (options.length < 4) {
-        const randomOption = Math.floor(Math.random() * 20) - 10;
+        const randomOption = answer + (Math.floor(Math.random() * 20) - 10);
         if (!generatedOptions.includes(randomOption)) {
           options.push({variant: randomOption, selected: false});
           generatedOptions.push(randomOption);
@@ -316,11 +401,11 @@ export default {
       if (option.variant === this.expression.answer) {
         this.expression.options[index].selected = true;
 
-        this.gameMode.score++;
+        this.gameMode.score += this.difficultyScores[this.difficulty];
       } else {
         this.expression.options[index].wrong = true;
 
-        this.gameMode.score--;
+        this.gameMode.score -= this.difficultyScores[this.difficulty];
       }
 
       setTimeout(() => {
@@ -332,7 +417,6 @@ export default {
 </script>
 
 <style>
-
 .button-choice.selected {
   background-color: var(--matched-color) !important;
 }
